@@ -1,11 +1,11 @@
 from flask import request, jsonify
 from config import app, db
-from models import Contact
+from models import Person
 
 
 @app.route("/persons", methods=["GET"])
 def get_context():
-    persons = Contact.query.all()
+    persons = Person.query.all()
     persons_objects = map(lambda x: x.to_json(), persons)
     json_persons = list(persons_objects)
     return jsonify({"persons": json_persons})
@@ -20,13 +20,13 @@ def create_contact():
     if not first_name or not last_name or not email:
         return ( jsonify({"please include first name, last and email"}) ,400)
 
-    new_person = Contact(first_name=first_name,last_name=last_name,email=email)
+    new_person = Person(first_name=first_name,last_name=last_name,email=email)
     try:
         db.session.add(new_person)
         db.session.commit()
         print(' new_person==>',new_person);
     except Exception as e:
-        return (jsonify({"messageeeee": str(e) }), 400)
+        return (jsonify({"messagee": str(e) }), 400)
     
     return (jsonify({"message":f"User {first_name}, {last_name} created"}),201)
 
@@ -34,7 +34,7 @@ def create_contact():
 
 @app.route("/update_contact<int:user_id>",methods=["PATCH"])
 def update_persons(user_id):
-    contact = Contact.query.get(user_id)
+    contact = Person.query.get(user_id)
     
     if not contact:
         return jsonify({"mesage":"user not found"}),404
